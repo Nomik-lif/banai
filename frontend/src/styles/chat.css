@@ -75,7 +75,29 @@
   border-color: var(--color-accent);
 }
 
-.chat__send { align-self: flex-end; }
+.chat__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.chat__mic {
+  font-size: var(--text-md);
+  line-height: 1;
+}
+
+.chat__mic--recording {
+  background: var(--color-danger-soft) !important;
+  border-color: var(--color-danger) !important;
+  color: var(--color-danger) !important;
+  animation: mic-pulse 1s ease-in-out infinite;
+}
+
+@keyframes mic-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
 
 /* Proposal card */
 .proposal-card {
