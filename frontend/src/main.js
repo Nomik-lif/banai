@@ -2,8 +2,9 @@ import '@fontsource/inter/400.css';
 import '@fontsource/inter/500.css';
 import '@fontsource/inter/600.css';
 import { getCatalog, getDefaultDesign } from './api/client.js';
-import { createStore } from './state/store.js';
+import { mountChatPanel } from './chat/chatPanel.js';
 import { mountPanel } from './editor/panel.js';
+import { createStore } from './state/store.js';
 import { createViewer } from './viewer/viewer.js';
 
 function showError(message) {
@@ -32,6 +33,7 @@ async function boot() {
   const viewer = createViewer(document.getElementById('viewer'), store);
   bindInteriorToggle(store);
   mountPanel(document.getElementById('properties-content'), store);
+  mountChatPanel(document.getElementById('chat-content'), store);
   if (import.meta.env.DEV) {
     window.__banai = Object.freeze({ store, viewer });
   }

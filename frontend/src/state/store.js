@@ -35,8 +35,15 @@ export function createStore({ design, revision = 1, catalog }) {
   if (!Number.isInteger(revision) || revision < 1) {
     throw new DomainError('SCHEMA_INVALID', 'revision', 'invalid revision');
   }
+  let _msgSeq = 0;
   let state = deepFreeze({
-    design: validDesign, revision, catalog: validCatalog, selection: null, ui: { doorsVisible: true },
+    design: validDesign,
+    revision,
+    catalog: validCatalog,
+    selection: null,
+    ui: { doorsVisible: true },
+    chatHistory: [],
+    pendingProposal: null,
   });
   const listeners = new Set();
 
@@ -75,6 +82,26 @@ export function createStore({ design, revision = 1, catalog }) {
 
     setDoorsVisible(doorsVisible) {
       commit({ ui: { ...state.ui, doorsVisible } });
+    },
+
+    addMessage(role, content) {
+      const id = `msg_${++_msgSeq}`;
+      commit({ chatHistory: [...state.chatHistory, { id, role, content }] });
+      return id;
+    },
+
+    setPendingProposal(proposal) {
+      commit({ pendingProposal: proposal });
+    },
+
+    clearPendingProposal() {
+      commit({ pendingProposal: null });
+    },
+
+    /** Call after /api/proposals/apply succeeds. */
+    commitProposal(newDesign, newRevision) {
+      const selection = state.selection && resolveSelection(newDesign, state.selection.id);
+      commit({ design: newDesign, revision: newRevision, pendingProposal: null, selection });
     },
   };
 }
