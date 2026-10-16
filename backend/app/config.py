@@ -11,6 +11,15 @@ class Settings(BaseSettings):
     app_env: str = "local"
     cors_origins: str = "http://localhost:5173"
 
+    openai_api_key: str = ""
+    openai_chat_model: str = "gpt-4o-mini"
+    openai_image_model: str = "dall-e-3"
+
+    supabase_url: str = ""
+    supabase_secret_key: str = ""
+
+    proposal_signing_key: str = ""
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
