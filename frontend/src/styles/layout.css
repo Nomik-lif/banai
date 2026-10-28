@@ -66,6 +66,21 @@ body {
 .viewer canvas { display: block; }
 .viewer-labels { position: absolute; inset: 0; pointer-events: none; }
 
+.viewer-tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: rgba(30, 30, 30, 0.82);
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.4;
+  padding: 4px 9px;
+  border-radius: 6px;
+  white-space: nowrap;
+  z-index: 10;
+  backdrop-filter: blur(2px);
+  transform: translateY(-4px);
+}
+
 .dim-label {
   padding: 2px var(--space-2);
   border: 1px solid var(--md-sys-color-outline-variant);

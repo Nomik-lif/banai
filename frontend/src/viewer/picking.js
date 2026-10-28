@@ -35,7 +35,7 @@ export function attachPicking({ dom, camera, getTargets, onPick, onHover = () =>
     if (event.buttons || hoverFrame) return;
     hoverFrame = requestAnimationFrame(() => {
       hoverFrame = 0;
-      onHover(hitAt(event));
+      onHover(hitAt(event), event);
     });
   };
 

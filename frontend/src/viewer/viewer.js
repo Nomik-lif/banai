@@ -10,6 +10,7 @@ import { createDimensions } from './dimensions.js';
 import { createHighlighter } from './highlight.js';
 import { createMaterials } from './materials.js';
 import { attachPicking } from './picking.js';
+import { describeSelection } from './format.js';
 import { toM } from './units.js';
 
 const BACKGROUND = '#eceeec';
@@ -107,12 +108,32 @@ export function createViewer(container, store) {
   resizeObserver.observe(container);
   resize();
 
+  const tooltip = document.createElement('div');
+  tooltip.className = 'viewer-tooltip';
+  tooltip.hidden = true;
+  container.appendChild(tooltip);
+
+  const hideTooltip = () => { tooltip.hidden = true; };
+  renderer.domElement.addEventListener('pointerleave', hideTooltip);
+
   const detachPicking = attachPicking({
     dom: renderer.domElement,
     camera,
     getTargets: () => (group ? group.children : []),
     onPick: (hit) => store.select(componentAt(hit, store.getState().design)),
-    onHover: (hit) => { renderer.domElement.style.cursor = hit?.object.userData.componentId ? 'pointer' : ''; },
+    onHover: (hit, event) => {
+      const id = hit?.object.userData.componentId;
+      renderer.domElement.style.cursor = id ? 'pointer' : '';
+      if (id && event) {
+        const rect = container.getBoundingClientRect();
+        tooltip.textContent = describeSelection(store.getState().design, { id, kind: id });
+        tooltip.style.left = `${event.clientX - rect.left + 14}px`;
+        tooltip.style.top = `${event.clientY - rect.top - 36}px`;
+        tooltip.hidden = false;
+      } else {
+        tooltip.hidden = true;
+      }
+    },
   });
   const unsubscribe = store.subscribe(sync);
   sync(store.getState());
@@ -140,6 +161,8 @@ export function createViewer(container, store) {
       renderer.setAnimationLoop(null);
       unsubscribe();
       detachPicking();
+      renderer.domElement.removeEventListener('pointerleave', hideTooltip);
+      tooltip.remove();
       resizeObserver.disconnect();
       if (group) disposeWardrobe(group);
       highlighter.dispose();
